@@ -4,11 +4,16 @@ msg = ['Leyendo fichero ',videoIn,' ...'];
 disp(msg);
 
 videoread = VideoReader(videoIn);             %apertura de ficheros in/out
-vidfinal = VideoWriter('videoProcesado.avi');
-open(vidfinal);
+%vidfinal = VideoWriter('videoProcesado.avi');
+%open(vidfinal);
+ficheroTiempo = fopen('tiempos.txt','w');
+fprintf(ficheroTiempo,'%6s %12s\n','Frame','Tiempo');
+
 time = cputime; %para tomar métrica del tiempo de proceso
+timeFrame = cputime;%para calcular el tiempo por frame
 
 for frame = 1:videoread.NumberOfFrames
+    
   currentFrame = read(videoread, frame);      %lectura de frame
  
   %Comienza la lógica
@@ -25,7 +30,8 @@ for frame = 1:videoread.NumberOfFrames
   %descriptores:
   area = [s.Area];
   perimetro = [s.Perimeter];
-  extent = [s.Extent];
+  %extent = [s.Extent]; %en este punto del proyecto no se usa
+
   circularidad = (4 * pi*area) ./ (perimetro.*perimetro);
   excentricidad = [s.Eccentricity];
   id2 = find(excentricidad > 0.9 & circularidad < 0.2 & perimetro > 200);
@@ -34,30 +40,38 @@ for frame = 1:videoread.NumberOfFrames
 
   cc = bwconncomp(bw2);
   L = labelmatrix(cc);
-  s = regionprops(L, 'Area', 'Perimeter');
+  s = regionprops(L, 'Area', 'Perimeter', 'Orientation');
   cantidad = size([s],2);
-  
+  angle = [s.Orientation];
   %Termina la logica
   
 
   %Para visualizar el procesador en tiempo real (mas lento) 
-  %imshow(bw2,'InitialMagnification', 60);  
+  imshow(bw2,'InitialMagnification', 60);  
   
   %Recomponer frame en RGB en vez de Gray (Necesario para el video)
-  rgbImage = cat(3, uint8(bw2*255), uint8(bw2*255), uint8(bw2*255));
-  writeVideo(vidfinal, rgbImage); %Escritura del frame en el video
+  %rgbImage = cat(3, uint8(bw2*255), uint8(bw2*255), uint8(bw2*255));
+  %writeVideo(vidfinal, rgbImage); %Escritura del frame en el video
   
   clc;
   msg = ['Procesando el frame ',num2str(frame),' de ',num2str(videoread.NumberOfFrames),' (',num2str(ceil(frame/videoread.NumberOfFrames*100)),'%)'];
   msg2 = ['Figuras segmentadas: ',num2str(cantidad)];
+  msg3= ['Ángulo: ', num2str(angle)];
   disp(msg);
   disp(msg2);
+  disp(msg3);
+  
+  endTimeFrame = cputime - timeFrame;
+  timeFrame = cputime;
+  fprintf(ficheroTiempo,'%d %12.8f\n',frame, endTimeFrame);
+  
 end
 
 endTime = cputime-time;
 msg = ['Tiempo de procesamiento: ',num2str(endTime),' segundos.'];
 disp(msg);
 
+fprintf(ficheroTiempo,'El tiempo total de procesamiento es: %8.3f \n', endTime);
 
 end
 
