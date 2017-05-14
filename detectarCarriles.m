@@ -45,12 +45,13 @@ for frame = 1:videoread.NumberOfFrames
   angle = [s.Orientation];
   %Termina la logica
   
-  %BW3 = bwmorph(bw2,'skel',Inf);
+  BW3 = bwmorph(bw2,'skel',Inf);
   
+  %C = corner(BW3, 'MinimumEigenvalue', 200, 'FilterCoefficients' , fspecial('gaussian',[5 1],1.5), 'QualityLevel', 0.25);
   %hold on
   %plot(C(:,1),C(:,2),'r*');
   %Para visualizar el procesador en tiempo real (mas lento) 
-  imshow(bw2,'InitialMagnification', 60);  
+  imshow(BW3,'InitialMagnification', 60);  
   
   %Recomponer frame en RGB en vez de Gray (Necesario para el video)
   %rgbImage = cat(3, uint8(bw2*255), uint8(bw2*255), uint8(bw2*255));
