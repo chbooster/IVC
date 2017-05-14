@@ -45,7 +45,10 @@ for frame = 1:videoread.NumberOfFrames
   angle = [s.Orientation];
   %Termina la logica
   
-
+  %BW3 = bwmorph(bw2,'skel',Inf);
+  
+  %hold on
+  %plot(C(:,1),C(:,2),'r*');
   %Para visualizar el procesador en tiempo real (mas lento) 
   imshow(bw2,'InitialMagnification', 60);  
   
