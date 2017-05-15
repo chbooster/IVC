@@ -47,7 +47,7 @@ for frame = 1:videoread.NumberOfFrames
   
   BW3 = bwmorph(bw2,'skel',Inf);
   
-  %C = corner(BW3, 'MinimumEigenvalue', 200, 'FilterCoefficients' , fspecial('gaussian',[5 1],1.5), 'QualityLevel', 0.25);
+  C = corner(BW3, 'MinimumEigenvalue', 200, 'FilterCoefficients' , fspecial('gaussian',[5 1],1.5), 'QualityLevel', 0.25);
   %hold on
   %plot(C(:,1),C(:,2),'r*');
   %Para visualizar el procesador en tiempo real (mas lento) 
